@@ -1,0 +1,49 @@
+{
+  "configs": [
+    {
+      "name": "Elbadr Group",
+      "codename": "BG",
+      "defaults": {
+        "url": "https://elbadrgroupeg.store/index.php",
+        "search_param": "",
+        "css": {
+          "product-list-selector": "main-products-wrapper",
+          "product": {
+            "selector": "product-thumb",
+            "title": "name",
+            "price": "price-tax",
+            "images": "img-responsive img-first lazyloaded"
+          }
+        },
+        "payload": {
+          "route": "product/search",
+          "description": "true"
+        },
+        "timeout": 20
+      }
+    },
+    {
+      "name": "Maximum hardware",
+      "codename": "MX",
+      "defaults": {
+        "url": "https://maximumhardware.store/index.php",
+        "search_param": "",
+        "css": {
+          "product-list-selector": "products-list",
+          "product": {
+            "selector": "product-item-container",
+            "title": "MAXS",
+            "price": "price-new",
+            "images": "img-responsive lazyautosizes lazyloaded"
+          }
+        },
+        "payload": {
+          "route": "product/search",
+          "category_id": 0,
+          "submit_search": ""
+        },
+        "timeout": 20
+      }
+    }
+  ]
+}

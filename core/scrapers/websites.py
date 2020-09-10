@@ -1,5 +1,0 @@
-EGYPT_LAPTOP = 'https://www.egyptlaptop.com/en/'
-BADR_GROUP = 'https://elbadrgroupeg.store/index.php'
-MAXIMUM = 'https://maximumhardware.store/index.php'
-HIGH_END = 'https://highendstore.net/index.php'
-SIGMA_COMPUTER = 'https://sigma-computer.com/search'

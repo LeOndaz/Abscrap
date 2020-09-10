@@ -1,26 +1,30 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from core.models import Product
 from django.conf import settings
-from core.scrapers.scraper import Scraper
 import asyncio
+from core.scrapers import MultiScraper
+from scrapit.utils import Site
 
 
 class AsyncScrapersConsumer(AsyncJsonWebsocketConsumer):
     async def websocket_connect(self, message):
         await self.accept()
 
-    async def websocket_disconnect(self, message):
-        pass
-
     async def receive_json(self, data, **kwargs):
-        coros = []
-        for store_conf in settings.STORES_CONF.get('configs'):
-            coro = Scraper(store_conf, search_text=data['search_text'])
-            coros.append(coro.get())
+        stores = data.get('stores')
+        if stores:
+            pass
 
-        for coro in asyncio.as_completed(coros):
-            scraper = await coro
-            await self.send_json(scraper.data)
+        multi_scraper = MultiScraper(
+            source=settings.SCRAPIT_SITES_CONF_DIR,
+            search_text=data['search_text']
+        )
+
+        for scraper in asyncio.as_completed(await multi_scraper):
+            finished = await scraper
+
+            await self.send_json(finished.result)
+
+        await self.close()
 
 
 class NotificationConsumer(AsyncJsonWebsocketConsumer):

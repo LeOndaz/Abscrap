@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import json
+from os import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ')s9hghgfg4uve%ebuyo4(()*^+9%&w=*-+^2539xse%zu=y(kv'
+SECRET_KEY = environ['SCRAPIT_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = (environ.get('DEBUG') == 'True')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -77,12 +78,6 @@ WSGI_APPLICATION = 'as3arProject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 CACHES = {
     'default': {
@@ -146,12 +141,9 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # Scrapers
 
-STORES_CONF = json.load(
-    open(BASE_DIR / Path(__file__).resolve(strict=True).parent.name / 'config/stores.json'))
+SCRAPIT_SITES_CONF_DIR = BASE_DIR / 'config/sites/'
+SCRAPIT_GLOBAL_CONF_DIR = BASE_DIR / 'config/global.json'
 
-SCRAPERS_CONF = json.load(
-    open(BASE_DIR / Path(__file__).resolve(strict=True).parent.name / 'config/scrapers.json')
-)
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 

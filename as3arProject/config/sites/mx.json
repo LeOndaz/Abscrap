@@ -1,0 +1,35 @@
+{
+  "name": "Maximum hardware",
+  "codename": "MX",
+  "defaults": {
+    "url": "https://maximumhardware.store/index.php",
+    "search_param": "search",
+    "css": {
+      "item-list": {
+        "selector": ".products-list",
+        "attrs": {
+          "class": "products-list"
+        }
+      },
+      "item": {
+        "selector": ".product-item-container",
+        "attrs": {
+          "class": "product-item-container"
+        }
+      },
+      "fields": [
+        ["title",{ "selector": ".right-block a" }, [ "href", "text" ]],
+        [ "price", { "selector": ".price-new" }, [ "text" ] ],
+        [ "images", { "selector": ".img-responsive.lazyautosizes.lazyloaded" }, [ "src" ]]
+      ]
+    },
+    "payload": {
+      "route": "product/search",
+      "category_id": 0,
+      "submit_search": ""
+    },
+    "timeout": 20,
+    "save_to_db": "false"
+  }
+}
+

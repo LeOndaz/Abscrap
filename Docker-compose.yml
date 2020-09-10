@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    env_file:
+      - ./db.env
+
+  # don't call it redis, error
+  redis_db:
+    image: redis:6
+    volumes: ./redis_data:/data
+    ports:
+    - 6379:6379
+    command: redis-server
+
+  web:
+    build: .
+    ports: 80:80
+    links:
+      - db
+      - redis_db
+    command: python manage.py runserver

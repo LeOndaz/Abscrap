@@ -1,0 +1,33 @@
+{
+  "name": "Elbadr Group",
+  "codename": "BG",
+  "defaults": {
+    "url": "https://elbadrgroupeg.store/index.php",
+    "search_param": "search",
+    "css": {
+      "item-list": {
+        "selector": ".main-products-wrapper",
+        "attrs": {
+          "class": "main-products-wrapper"
+        }
+      },
+      "item": {
+        "selector": ".product-thumb",
+        "attrs": {
+          "class": "product-thumb"
+        }
+      },
+      "fields": [
+        ["title", {"selector": ".name a"}, ["text"]],
+        ["price", {"selector":  ".price-tax"}, ["text"],
+        ["images"], {"selector":  ".img-responsive.img-first.lazyloaded"}, ["src"]]
+      ]
+    },
+    "payload": {
+      "route": "product/search",
+      "description": "true"
+    },
+    "timeout": 20,
+    "save_to_db": "false"
+  }
+}

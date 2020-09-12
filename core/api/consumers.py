@@ -10,23 +10,37 @@ class AsyncScrapersConsumer(AsyncJsonWebsocketConsumer):
         await self.accept()
 
     async def receive_json(self, data, **kwargs):
-        stores = data.get('stores')
-        if stores:
-            pass
+        source = data.pop('source', None)
 
+        if source:
+            print('STARTING')
+            await self.scrap(data, source=source)
+            print('ENDING')
+        else:
+            await self.scrap(data, source=settings.SCRAPIT_SITES_CONF_DIR)
+
+        await self.close()
+
+    async def scrap(self, data, source=None):
         multi_scraper = MultiScraper(
-            source=settings.SCRAPIT_SITES_CONF_DIR,
+            source=source,
             search_text=data['search_text']
         )
 
         for scraper in asyncio.as_completed(await multi_scraper):
             finished = await scraper
-
             await self.send_json(finished.result)
-
-        await self.close()
 
 
 class NotificationConsumer(AsyncJsonWebsocketConsumer):
     def websocket_connect(self, message):
         self.accept()
+
+    def websocket_receive(self, message):
+        print('recieveveveve')
+        self.close()
+
+
+class ChatConsumer(AsyncJsonWebsocketConsumer):
+    pass
+

@@ -4,6 +4,7 @@ from functools import singledispatch
 from collections.abc import Iterable
 from functools import cached_property
 from collections import ChainMap, UserDict
+from collections.abc import Mapping
 from typing import Iterable
 
 
@@ -35,18 +36,13 @@ class Site:
     When accessing self.conf, this returns the JSON file as a dict.
     """
 
-    def __init__(self, path):
-        self.path = path
-
-    @cached_property
-    def conf(self):
-        """
-        Returns a dict from the path provided.
-        This property is cached per instance, this means updating a config file needs a server restart.
-        """
-        return json.load(
-            open(Path(self.path).resolve(strict=True))
-        )
+    def __init__(self, source):
+        try:
+            # assume file path
+            self.conf = json.load(open(Path(source).resolve(strict=True)))
+        except TypeError:
+            # assume dict
+            self.conf = source
 
     def get(self, *args, **kwargs):
         """
@@ -58,20 +54,42 @@ class Site:
         return self.conf.get('name')
 
     @classmethod
-    def from_iter(cls, source):
+    def from_iter(cls, iterable):
         """
         Takes an iterable of config files, returns a lazy Site object generator.
         """
-        for conf in source:
+        for conf in iterable:
             yield cls(conf)
 
     @classmethod
-    def from_dir(cls, source):
+    def from_dir(cls, directory):
         """
-        Depends on self.from_iter() and the iterable in this case is the contents of a directory.
+        Same as cls.from_iter() but the iterable in this case is the contents of a directory.
         """
-        path = Path(source).resolve(strict=True)
-        yield from cls.from_iter(path.iterdir())
+        yield from cls.from_iter(directory.iterdir())
+
+    @classmethod
+    def from_source(cls, source):
+        """
+        Utilizes all of the above methods
+        """
+        try:
+            # assume path
+            path = Path(source).resolve(strict=True)
+            if path.is_dir():
+                # assume dir path
+                yield from cls.from_dir(path)
+            else:
+                # assume file path
+                yield cls(source)
+        except TypeError:
+            # dict has a virtual superclass of iterable so we can't check if it's iterable.
+            if not isinstance(source, Mapping):
+                # assume non-dict iterable
+                yield from cls.from_iter(source)
+            else:
+                # assume dict
+                yield cls(source)
 
 
 def get_items_list_from_soup(soup, list_attrs, item_attrs):

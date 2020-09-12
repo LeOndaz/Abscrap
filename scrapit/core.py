@@ -7,6 +7,7 @@ from scrapit.utils import get_items_list_from_soup, Site, is_json_serialiszable
 from scrapit.serializers import TagSerializer
 import httpx
 import json
+# from contextlib import
 
 
 class BeautifulSoup(OldBeautifulSoup):
@@ -97,8 +98,20 @@ class HTMLGenericScraper(GenericScraper):
                 css_conf.get('item')
         ):
 
+            """
+            [
+                "data": [
+                    {
+                        "title": {"text": "RTX 2060", "price": "7000 EGP" },
+                        "price": "7000 EGP",
+                    }
+                ]
+            ]
+
+            """
             item = {}
             for field_config in fields:
+                field = {}
                 field_name, field_kwargs, *field_attrs = field_config
 
                 tag_serializer = TagSerializer(item_soup.select(**field_kwargs))
@@ -107,13 +120,13 @@ class HTMLGenericScraper(GenericScraper):
                     if field_attrs:
                         field_attrs = field_attrs[0]
                         for attr in field_attrs:
-                            item[attr] = tag[attr]
+                            field[attr] = tag[attr]
                     else:
                         return tag
 
-            self.result['data'].append({
-                field_name: item
-            })
+                item[field_name] = field
+
+            self.result['data'].append(item)
             self.result['site'] = self.source.get('name')
 
 
@@ -167,7 +180,9 @@ class HTMLGenericMultiScraper(HTMLGenericScraper):
         self._scrapers = []
 
     async def _activate(self, **kwargs):
-        for site in Site.from_dir(self.source):
+        sites = Site.from_source(self.source)
+
+        for site in sites:
             scraper = self.scraper_class(site, search_text=self.kwargs['search_text'])
             self._scrapers.append(scraper._activate())
 

@@ -7,6 +7,7 @@ from scrapit.utils import get_items_list_from_soup, Site, is_json_serialiszable
 from scrapit.serializers import TagSerializer
 import httpx
 import json
+
 # from contextlib import
 
 
@@ -34,16 +35,23 @@ class GenericScraper:
 
         self.result = {
             'data': [],
-            'site': None
+            'site_url': None,
+            'site_name': None
         }
 
-    async def _activate(self, **kwargs):
+    async def activate(self, **kwargs):
         raise NotImplementedError
 
-    def _scrap(self, _html):
+    async def scrap(self, **kwargs):
+        """
+        Expects _html as kwarg, named _html because there's a library called html
+        """
         raise NotImplementedError
 
     async def initiate_request(self):
+        """
+        Must returns the HTML of the page to be scraped.
+        """
         payload, headers, timeout = self.get_payload(), self.get_headers(), self.get_timeout()
 
         # TODO: catch timeout here
@@ -63,14 +71,38 @@ class GenericScraper:
             **{
                 self.source.get('search_param') or 'search': self.kwargs['search_text']
             },
-            **self.source.get('defaults').get('payload'),
+            **self.source.get('defaults').get('payload', {})
         }
 
     def __await__(self):
-        return self._activate().__await__()
+        return self.activate().__await__()
 
     def __repr__(self):
         return 'Scraper(source="{source})"'.format(source=self.source)
+
+
+class GenericMultiScraper(GenericScraper):
+    scraper_class = None
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self._scrapers = []
+
+    async def scrap(self, **kwargs):
+        sites = Site.from_source(self.source)
+
+        for site in sites:
+            scraper = self.scraper_class(site, search_text=self.kwargs['search_text'])
+            self._scrapers.append(scraper.activate())
+
+    async def activate(self, **kwargs):
+        await self.scrap()
+        self._done = True
+        return self
+
+    def __iter__(self):
+        yield from self._scrapers
 
 
 class HTMLGenericScraper(GenericScraper):
@@ -80,16 +112,24 @@ class HTMLGenericScraper(GenericScraper):
     source: a config file
     """
 
-    async def _activate(self, **kwargs):
+    async def activate(self, **kwargs):
+        """
+        This activates the scraper, returns the scraper itself after it's finished.
+        This is not meant to be overridden, this calls most methods, override the one you want.
+        """
         response = await self.initiate_request()
-        self._scrap(response)
+
+        await self.scrap(_html=response)
+        self.finalize()
         self._done = True
         return self
 
-    def _scrap(self, _html):
-        page_soup = BeautifulSoup(_html, 'lxml')
+    async def scrap(self, **kwargs):
+        """
+        The scraping logic, scraps the list, sets the self.data, override this if needed.
+        """
+        page_soup = BeautifulSoup(kwargs.get('_html'), 'lxml')
         css_conf = self.source.get('defaults').get('css')
-
         fields = css_conf.get('fields')
 
         for item_soup in get_items_list_from_soup(
@@ -97,8 +137,9 @@ class HTMLGenericScraper(GenericScraper):
                 css_conf.get('item-list'),
                 css_conf.get('item')
         ):
-
+            # TODO
             """
+            # this is just for studying the response shape 
             [
                 "data": [
                     {
@@ -110,6 +151,7 @@ class HTMLGenericScraper(GenericScraper):
 
             """
             item = {}
+            # TODO why iterate this for every field? it's the same
             for field_config in fields:
                 field = {}
                 field_name, field_kwargs, *field_attrs = field_config
@@ -119,15 +161,17 @@ class HTMLGenericScraper(GenericScraper):
                 for tag in tag_serializer.data:
                     if field_attrs:
                         field_attrs = field_attrs[0]
-                        for attr in field_attrs:
-                            field[attr] = tag[attr]
+                        field = {**tag}
                     else:
                         return tag
 
                 item[field_name] = field
 
             self.result['data'].append(item)
-            self.result['site'] = self.source.get('name')
+
+    def finalize(self):
+        self.result['site_name'] = self.source.get('name')
+        self.result['site_url'] = self.source.get('defaults').get('url')
 
 
 class JSONGenericScraper(GenericScraper):
@@ -135,7 +179,7 @@ class JSONGenericScraper(GenericScraper):
     A response text is JSON anyway.
     """
 
-    async def _activate(self, **kwargs):
+    async def activate(self, **kwargs):
         return await self.initiate_request()
 
     async def initiate_request(self):
@@ -167,26 +211,13 @@ class HTMLDjangoScraper(HTMLGenericScraper):
         return self.serializer_class
 
 
-class HTMLGenericMultiScraper(HTMLGenericScraper):
+class HTMLGenericMultiScraper(GenericMultiScraper, HTMLGenericScraper):
     """
 
     source: dir or list of config files or list of dicts
     """
     scraper_class = HTMLGenericScraper
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
 
-        self._scrapers = []
-
-    async def _activate(self, **kwargs):
-        sites = Site.from_source(self.source)
-
-        for site in sites:
-            scraper = self.scraper_class(site, search_text=self.kwargs['search_text'])
-            self._scrapers.append(scraper._activate())
-
-        return self
-
-    def __iter__(self):
-        yield from self._scrapers
+class JSONGenericMultiScraper(GenericMultiScraper, JSONGenericScraper):
+    scraper_class = JSONGenericScraper

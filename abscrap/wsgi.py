@@ -1,5 +1,5 @@
 """
-WSGI config for as3arProject project.
+WSGI config for abscrap project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'as3arProject.settings.dev')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abscrap.settings.dev')
 
 application = get_wsgi_application()

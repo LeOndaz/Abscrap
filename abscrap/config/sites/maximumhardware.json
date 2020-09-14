@@ -28,8 +28,7 @@
       "category_id": 0,
       "submit_search": ""
     },
-    "timeout": 20,
-    "save_to_db": "false"
+    "timeout": 20
   }
 }
 

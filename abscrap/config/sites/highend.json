@@ -1,6 +1,6 @@
 {
-  "name": "Elbadr Group",
-  "codename": "BG",
+  "name": "High End",
+  "codename": "HE",
   "defaults": {
     "url": "https://elbadrgroupeg.store/index.php",
     "search_param": "search",
@@ -27,7 +27,6 @@
       "route": "product/search",
       "description": "true"
     },
-    "timeout": 20,
-    "save_to_db": "false"
+    "timeout": 20
   }
 }

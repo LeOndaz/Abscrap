@@ -12,14 +12,7 @@ class AsyncScrapersConsumer(AsyncJsonWebsocketConsumer):
     async def receive_json(self, data, **kwargs):
         source = data.pop('source', None)
 
-        if source:
-            print('STARTING')
-            await self.scrap(data, source=source)
-            print('ENDING')
-        else:
-            await self.scrap(data, source=settings.SCRAPIT_SITES_CONF_DIR)
-
-        await self.close()
+        await self.scrap(data, source=source or settings.SCRAPIT_SITES_CONF_DIR)
 
     async def scrap(self, data, source=None):
         multi_scraper = MultiScraper(
@@ -33,14 +26,16 @@ class AsyncScrapersConsumer(AsyncJsonWebsocketConsumer):
 
 
 class NotificationConsumer(AsyncJsonWebsocketConsumer):
-    def websocket_connect(self, message):
-        self.accept()
+    """ MISSED UP, FOR TESTING PURPOSE ONLY, WILL BE REMOVED.. """
+    async def websocket_connect(self, message):
+        await self.accept()
+        await self.channel_layer.group_add(
+            'group_1',
+            'channel_1'
+        )
 
-    def websocket_receive(self, message):
+    async def websocket_receive(self, message):
         print('recieveveveve')
-        self.close()
+        await self.close()
 
-
-class ChatConsumer(AsyncJsonWebsocketConsumer):
-    pass
 

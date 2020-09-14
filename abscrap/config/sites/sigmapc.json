@@ -1,0 +1,26 @@
+{
+  "name": "Sigma Computer",
+  "codename": "SPC",
+  "defaults": {
+    "url": "http://sigma-computer.com/search",
+    "search_param": "search",
+    "css": {
+      "item-list": {
+        "selector": ".products-list",
+        "attrs": {
+          "class": "products-list"
+        }
+      },
+      "item": {
+        "selector": ".product-item-container",
+        "attrs": {
+          "class": "product-item-container"
+        }
+      },
+      "fields": [
+        ["title", {"selector": ".caption a"}, ["text"]]
+      ]
+    },
+    "timeout": 20
+  }
+}

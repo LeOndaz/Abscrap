@@ -1,0 +1,25 @@
+{
+  "name": "Amazon",
+  "codename": "AZ",
+  "defaults": {
+    "url": "https://www.amazon.com/s/",
+    "search_param": "field-keywords",
+    "css": {
+      "item-list": {
+        "selector": ".sg-col-20-of-24.sg-col-28-of-32.sg-col-16-of-20.sg-col.sg-col-32-of-36.sg-col-8-of-12.sg-col-12-of-16.sg-col-24-of-28"
+      },
+      "item": {
+        "selector": ".a-section.a-spacing-medium > .sg-row:nth-child(2)"
+      },
+      "fields": [
+        ["title", {"selector": ".a-size-medium.a-color-base.a-text-normal"}, ["text"]],
+        ["price", {"selector":  ".a-price"}, ["text"],
+        ["images"], {"selector":  ".s-image"}, ["src"]]
+      ]
+    },
+    "payload": {
+      "search-alias": "aps"
+    },
+    "timeout": 20
+  }
+}

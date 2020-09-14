@@ -1,5 +1,5 @@
 """
-ASGI config for as3arProject project.
+ASGI config for abscrap project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -13,6 +13,6 @@ from channels.routing import get_default_application
 import django
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'as3arProject.settings.dev')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abscrap.settings.dev')
 django.setup()
 application = get_default_application()

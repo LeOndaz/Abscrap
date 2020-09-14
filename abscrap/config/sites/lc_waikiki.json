@@ -1,0 +1,22 @@
+{
+  "name": "LC Waikiki",
+  "codename": "LC",
+  "defaults": {
+    "url": "https://www.lcwaikiki.eg/list/",
+    "search_param": "search_text",
+    "css": {
+      "item-list": {
+        "selector": ".col-sm-12.pl-reset.pr-reset"
+      },
+      "item": {
+        "selector": ".product-item-wrapper.js-product-wrapper"
+        },
+      "fields": [
+        ["title", {"selector": ".product-name a"}, ["href", "text"]],
+        ["price", {"selector":  ".product-sale-price"}, ["text"]],
+        ["images", {"selector":  ".product-item-image"}, ["src"]]
+        ]
+      }
+    },
+    "timeout": 20
+}

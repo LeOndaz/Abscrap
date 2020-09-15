@@ -2,7 +2,6 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.conf import settings
 import asyncio
 from core.scrapers import MultiScraper
-from scrapit.utils import Site
 
 
 class AsyncScrapersConsumer(AsyncJsonWebsocketConsumer):

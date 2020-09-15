@@ -142,7 +142,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 # Scrapers
 
 SCRAPIT_SITES_CONF_DIR = BASE_DIR / 'config/sites/'
-SCRAPIT_GLOBAL_CONF_DIR = BASE_DIR / 'config/global.json'
+# SCRAPIT_GLOBAL_CONF_DIR = BASE_DIR / 'config/global.json'
 
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'

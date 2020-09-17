@@ -9,9 +9,10 @@ services:
   # don't call it redis, it will miss up redis image (a bug I noticed)
   redis_db:
     image: redis:6
-    volumes: ./redis-data:/redis-data
+    volumes:
+      - ./redis-data:/redis-data
     ports:
-    - 6379:6379
+      - 6379:6379
     command: redis-server
 
   web:
@@ -21,4 +22,6 @@ services:
     links:
       - db
       - redis_db
-    command: python manage.py migrate & python manage.py runserver
+    env_file:
+      - .env
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"

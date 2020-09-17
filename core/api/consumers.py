@@ -2,6 +2,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.conf import settings
 import asyncio
 from core.scrapers import MultiScraper
+from channels.generic.http import AsyncHttpConsumer
 
 
 class AsyncScrapersConsumer(AsyncJsonWebsocketConsumer):

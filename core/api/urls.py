@@ -1,12 +1,11 @@
-from django.urls import path, re_path
-# from core.api.views import StoresHandler
-from core.api.consumers import AsyncScrapersConsumer
-
-
-# urlpatterns = [
-#     path('stores/<str:store_name>/', StoresHandler.as_view()),
-# ]
+from django.urls import re_path, path
+from core.api.consumers import AsyncScrapersConsumer, NotificationConsumer, SubscribeToNotifications
 
 ws_urlpatterns = [
-    re_path(r'ws/data/$', AsyncScrapersConsumer)
+    re_path(r'ws/data/?$', AsyncScrapersConsumer),
+    re_path(r'ws/notifications/?$', NotificationConsumer),
+]
+
+http_urlpatterns = [
+    path(r'notifications/subscribe/', SubscribeToNotifications)
 ]

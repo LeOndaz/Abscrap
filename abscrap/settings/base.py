@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-import json
 from os import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -151,7 +150,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('redis', 6379)],
+            "hosts": [('redis' if environ.get('DOCKER') else 'localhost', 6379)],
         },
     },
 }

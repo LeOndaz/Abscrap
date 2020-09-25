@@ -4,6 +4,7 @@
   "defaults": {
     "url": "https://maximumhardware.store/index.php",
     "search_param": "search",
+    "page_param": "page",
     "css": {
       "item-list": {
         "selector": ".products-list",

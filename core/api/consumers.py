@@ -3,6 +3,7 @@ from django.conf import settings
 import asyncio
 from core.scrapers import MultiScraper
 from channels.generic.http import AsyncHttpConsumer
+from .serializers import NotificationSerializer
 
 
 class AsyncScrapersConsumer(AsyncJsonWebsocketConsumer):
@@ -14,7 +15,6 @@ class AsyncScrapersConsumer(AsyncJsonWebsocketConsumer):
         "source": config_dict
     }
     """
-
     async def connect(self):
         """
         You'll probably want to override this if you have conditions for accepting the connection.
@@ -36,26 +36,13 @@ class AsyncScrapersConsumer(AsyncJsonWebsocketConsumer):
             search_text=data['search_text']
         )
 
-        try:
-            for scraper in asyncio.as_completed(await multi_scraper):
-                finished = await scraper
-                await self.send_json(finished.result)
-        except TimeoutError:
-            # if timeout error, ignore this specific website
-            pass
-
-
-class SubscribeToNotifications(AsyncHttpConsumer):
-    async def http_request(self, message):
-        print(message)
-        await self.channel_layer.group_send(
-            'notifications',
-            {
-                "type": "handle.notification",
-                "text": "NOTIFICATION SUCCESS"
-            }
-        )
-        await self.send_response(status=200, body=b"")
+        for coro in asyncio.as_completed(await multi_scraper):
+            try:
+                scraper = await coro
+                await self.send_json(scraper.result)
+            except TimeoutError:
+                # if timeout error, ignore this specific website
+                continue
 
 
 class NotificationConsumer(AsyncJsonWebsocketConsumer):
@@ -70,9 +57,9 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
 
     async def websocket_receive(self, message):
         print('recieveveveve')
-        await self.send_json({'send': '2'})
+        await self.send_json({'message': 'I can\'t be fooled ya maw'})
 
     async def handle_notification(self, evt):
         await self.send_json({
-            'notification': evt['text'],
+            'notification': evt['notification'],
         })

@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from core.models import Product
+from core.models import Notification
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Product
-        fields = ['name', 'price', 'image_path', 'store']
+        model = Notification
+        fields = ('content', 'created_at')

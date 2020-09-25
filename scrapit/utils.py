@@ -74,7 +74,7 @@ class Site:
 
     @classmethod
     def from_source(cls, source):
-        """
+        """ @TODO: add logging
         Utilizes all of the above methods
         """
         try:
@@ -108,3 +108,23 @@ def get_items_list_from_soup(soup, list_attrs, item_attrs):
 
     if list_soup is not None:
         yield from list_soup.select(**item_attrs)
+
+
+class ScraperError(Exception):
+    """
+    Raise for unfinishedTasks
+    """
+
+
+def done_or_raise(method):
+    """
+    A decorator for methods in a class implementing ._done property, checks if done, if not, raises exception.
+    """
+
+    def f():
+        if self._done:
+            return method
+
+        raise ScraperError('')
+
+    return f

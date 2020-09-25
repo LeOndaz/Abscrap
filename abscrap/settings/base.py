@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'channels',
     'corsheaders',
     'rest_framework',
-    'core',
+    'core.apps.CoreConfig',
 
 ]
 
@@ -58,7 +58,9 @@ ROOT_URLCONF = 'abscrap.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR.parent / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

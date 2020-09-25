@@ -25,4 +25,7 @@ class TagSerializer:
             })
 
     def get_excluded_attrs(self):
+        """
+        Override, call super(), add more attrs.
+        """
         return self.excluded_attrs

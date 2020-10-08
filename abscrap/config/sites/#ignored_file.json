@@ -13,8 +13,8 @@
       },
       "fields": [
         ["title", {"selector": ".a-size-medium.a-color-base.a-text-normal"}, ["text"]],
-        ["price", {"selector":  ".a-price"}, ["text"],
-        ["images"], {"selector":  ".s-image"}, ["src"]]
+        ["price", {"selector":  ".a-price"}, ["text"]],
+        ["images", {"selector":  ".s-image"}, ["src"]]
       ]
     },
     "payload": {
